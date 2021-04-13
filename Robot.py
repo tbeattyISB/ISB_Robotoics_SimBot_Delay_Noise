@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from threading import Thread, Timer
 
 displayw = 800
@@ -61,6 +62,8 @@ class Player(object):
         self.__v = 0
         self.power = 0
         self.error = 0
+        self.random_noise = 0
+        self.delay = 0
         self.sensorSampleRate = 0.2
         self.sensor = 800
         self.image = pygame.image.load("robot.png")
@@ -122,10 +125,19 @@ class Player(object):
         t = Timer(sec, func_wrapper)
         t.start()
 
+    def setNoise(self, noise):
+        self.random_noise = noise;
+
+    def setDelay(self, delay):
+        self.delay = delay
+
     def update_ultrasonic(self):
         global wallPos
-        self.sensor = wallPos - self.__x
-        self.set_timeout(self.update_ultrasonic, 0.002)
+        self.sensor = (wallPos - self.__x) + 600 * self.random_noise * (random.random() - 0.5)
+        if (self.delay > 0.002 and self.delay < 1.001):
+            self.set_timeout(self.update_ultrasonic, self.delay)
+        else:
+            self.set_timeout(self.update_ultrasonic, 0.002)
 
 
 # Main Class
